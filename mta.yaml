@@ -17,17 +17,40 @@ modules:
     requires:
       - name: tinydb
       - name: hdi_tinydb
+      - name: tiny_uaa
   - name: tinnyui
     type: html5
     path: tinyui
     requires:
+      - name: tiny_uaa
       - name: tinyjs_api
         group: destinations
         properties:
           name: tinyjs_be
           url: '~{service_url}'
+          forwardAuthToken: true
 resources:
   - name: hdi_tinydb
     properties:
       hdi-container-name: '${service-name}'
     type: com.sap.xs.hdi-container
+  - name: tiny_uaa
+    type: com.sap.xs.uaa
+    parameters:
+      config: 
+        xsappname: tinyworld
+        scopes:
+          - name: $XSAPPNAME.view
+            description: View data
+          - name: $XSAPPNAME.create
+            description: Create data
+        role-templates:
+          - name: tinyworldView
+            description: Role for viewing data
+            scope-references: 
+              - $XSAPPNAME.view
+          - name: tinyworldCreate
+            description: Role for creating data
+            scope-references: 
+              - $XSAPPNAME.view
+              - $XSAPPNAME.create
